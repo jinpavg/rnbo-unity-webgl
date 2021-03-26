@@ -3,7 +3,7 @@ var modParam;
 var audioContext;
 
 // get data from Unity C# script
-function aFunctionImplementedInHtmlFile(jsString) {
+function useStringFromUnity(jsString) {
     unityMod = Number.parseFloat(jsString);
     showTheUpdate()
     setModParam()
@@ -89,6 +89,7 @@ fetch("code/patch.export.json")
         document.querySelector('#turn-off').addEventListener('click', startStop);
 
         function startStop() {
+            // resume audioContext on user activity, makes browser happy
             audioContext.resume();
             if (openingParam.value === 1) {
                 openingParam.value = 0
