@@ -1,6 +1,9 @@
 # generative-unity
 generative audio in a unity webGL game
 
+## the game files
+the unity project, C# scripts, and .jslib plugin that makes this all work is all [here](https://www.dropbox.com/sh/ihq2crjg13ij3li/AACDJi_49WV6Q92X2jaevXCqa?dl=0)
+
 ## current issues
 
 On a local server, getting an error in console regarding the unity wasm build. It seems like it can be fixed by sending correct MIME types. 
