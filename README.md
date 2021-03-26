@@ -3,13 +3,12 @@ generative audio in a unity webGL game
 
 ## current issues
 
-On a local server, getting an error in console regarding the unity wasm build.
+On a local server, getting an error in console regarding the unity wasm build. It seems like it can be fixed by sending correct MIME types. 
 
 This is related to current unity issue:
 
 [unity bug](https://issuetracker.unity3d.com/issues/webgl-wasm-streaming-compile-failed-browser-errors-occur-when-launching-any-unity-project-on-a-server)
 
-This could be only an issue on local server, fixed by sending correct MIME types.
 
 Secondly, there is an issue with webgl code compression, I currently have it disabled in project player settings. 
 
