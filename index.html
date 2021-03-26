@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>AVG | simpleComms</title>
+  <link rel="shortcut icon" href="TemplateData/favicon.ico">
+  <link rel="stylesheet" href="TemplateData/style.css">
+</head>
+
+<body>
+  <p>hi welcome to the future</p>
+  <form id="change-modTwo">
+    <input id="enterFreq" type="range" min="0.0001" max="1000">
+    <br><button>Click to Change ModTwo Param</button>
+  </form>
+  <div>
+    <input type="button" id="turn-off" value="On/Off"></input>
+  </div>
+
+
+
+  <!-- Unity WebGL page content -->
+  <div id="unity-container" class="unity-desktop">
+    <canvas id="unity-canvas"></canvas>
+    <div id="unity-loading-bar">
+      <div id="unity-logo"></div>
+      <div id="unity-progress-bar-empty">
+        <div id="unity-progress-bar-full"></div>
+      </div>
+    </div>
+    <div id="unity-mobile-warning">
+      WebGL builds are not supported on mobile devices.
+    </div>
+    <div id="unity-footer">
+      <div id="unity-webgl-logo"></div>
+      <div id="unity-fullscreen-button"></div>
+      <div id="unity-build-title">simpleComms</div>
+    </div>
+  </div>
+
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+
+  <!-- Unity WebGL Build -->
+  <script>
+    var buildUrl = "Build";
+    var loaderUrl = buildUrl + "/connectItUnity2.loader.js";
+    var config = {
+      dataUrl: buildUrl + "/connectItUnity2.data",
+      frameworkUrl: buildUrl + "/connectItUnity2.framework.js",
+      codeUrl: buildUrl + "/connectItUnity2.wasm",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "DefaultCompany",
+      productName: "simpleComms",
+      productVersion: "0.1",
+    };
+
+    var container = document.querySelector("#unity-container");
+    var canvas = document.querySelector("#unity-canvas");
+    var loadingBar = document.querySelector("#unity-loading-bar");
+    var progressBarFull = document.querySelector("#unity-progress-bar-full");
+    var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+    var mobileWarning = document.querySelector("#unity-mobile-warning");
+
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      container.className = "unity-mobile";
+      config.devicePixelRatio = 1;
+      mobileWarning.style.display = "block";
+      setTimeout(() => {
+        mobileWarning.style.display = "none";
+      }, 5000);
+    } else {
+      canvas.style.width = "960px";
+      canvas.style.height = "600px";
+    }
+    loadingBar.style.display = "block";
+
+    var script = document.createElement("script");
+    script.src = loaderUrl;
+    script.onload = () => {
+      createUnityInstance(canvas, config, (progress) => {
+        progressBarFull.style.width = 100 * progress + "%";
+      }).then((unityInstance) => {
+        loadingBar.style.display = "none";
+        fullscreenButton.onclick = () => {
+          unityInstance.SetFullscreen(1);
+        };
+      }).catch((message) => {
+        alert(message);
+      });
+    };
+    document.body.appendChild(script);
+  </script>
+
+  <!-- Import RNBO Engine Wrapper -->
+  <script type="text/javascript" src="https://c74-public.nyc3.digitaloceanspaces.com/rnbo/0.10.0-dev.13/rnbo.min.js">
+  </script>
+
+  <!-- RNBO functionality -->
+  <script>
+    var unityMod = 168;
+    var modParam;
+    var audioContext;
+
+    // get data from Unity C# script
+    function aFunctionImplementedInHtmlFile(jsString) {
+      unityMod = Number.parseFloat(jsString);
+      showTheUpdate()
+      setModParam()
+    }
+
+    // for debugging
+    function showTheUpdate() {
+      console.log(`value of unityMod: ` + unityMod)
+    }
+    // set the first modulation frequency from the unity c# script
+    function setModParam() {
+      if (modParam)
+        modParam.value = Number.parseFloat(unityMod);
+    }
+
+    let WAContext = window.AudioContext || window.webkitAudioContext;
+    audioContext = new WAContext();
+
+    // make gain node, connect it to output 
+    let outputNode = audioContext.createGain();
+    outputNode.connect(audioContext.destination);
+
+    let patcher;
+
+    fetch("code/patch.export.json")
+      .then((response) => response.json())
+
+      // now create RNBO device with that patcher
+
+      .then((responseJson) => {
+        patcher = responseJson;
+      })
+
+
+      // Use the fetched patcher to create a RNBO device
+      .then(() => {
+        return RNBO.createDevice({
+          context: audioContext,
+          patcher
+        });
+      })
+
+      .then((device) => {
+        // when device is ready, connect it to audio output
+        device.node.connect(outputNode);
+
+
+        // Setting a parameter named "opening"
+        let openingParam = device.parametersById.get("opening");
+        openingParam.value = 1;
+
+        // Listening to parameter events
+        openingParam.changeEvent.subscribe(newValue => {
+          console.log(`opening set to ${newValue}`);
+        });
+
+        // Setting a parameter named "mod"
+        modParam = device.parametersById.get("mod");
+        modParam.value = Number.parseFloat(unityMod);
+
+        // Listening to parameter events
+        modParam.changeEvent.subscribe(newValue => {
+          console.log(`mod set to ${newValue}`);
+        });
+
+        // Setting a parameter named "modTwo"
+        modTwoParam = device.parametersById.get("modTwo");
+        modTwoParam.value = 0.1;
+
+        // Listening to parameter events
+        modTwoParam.changeEvent.subscribe(newValue => {
+          console.log(`modTwo set to ${newValue}`);
+        });
+
+        // get the second modulator frequency from the slider
+        document.querySelector('#change-modTwo').addEventListener('submit', function (e) {
+          e.preventDefault()
+          if (modTwoParam)
+            modTwoParam.value = parseFloat(e.target.elements.enterFreq.value)
+        });
+
+        // on off button with envelope
+        document.querySelector('#turn-off').addEventListener('click', startStop);
+
+        function startStop() {
+          audioContext.resume();
+          if (openingParam.value === 1) {
+            openingParam.value = 0
+          } else {
+            openingParam.value = 1
+          }
+        }
+
+
+      })
+
+      .catch((err) => {
+        console.error(err)
+      });
+  </script>
+
+
+
+
+</body>
+
+</html>
