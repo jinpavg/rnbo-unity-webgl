@@ -90,12 +90,12 @@ fetch("code/patch.export.json")
             console.log(`modTwo set to ${newValue}`);
         });
 
-        // get the second modulator frequency from the slider
-        document.querySelector('#change-modTwo').addEventListener('submit', function (e) {
-            e.preventDefault()
-            if (modTwoParam)
-                modTwoParam.value = parseFloat(e.target.elements.enterFreq.value)
-        });
+        // // get the second modulator frequency from the slider
+        // document.querySelector('#change-modTwo').addEventListener('submit', function (e) {
+        //     e.preventDefault()
+        //     if (modTwoParam)
+        //         modTwoParam.value = parseFloat(e.target.elements.enterFreq.value)
+        // });
 
         // on off button with envelope
         document.querySelector('#turn-off').addEventListener('click', startStop);
