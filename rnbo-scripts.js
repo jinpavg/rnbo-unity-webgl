@@ -65,7 +65,7 @@ fetch("code/patch.export.json")
 
         // Setting a parameter named "opening"
         let openingParam = device.parametersById.get("opening");
-        openingParam.value = 1;
+        openingParam.value = 0;
 
         // Listening to parameter events
         openingParam.changeEvent.subscribe(newValue => {
@@ -102,7 +102,9 @@ fetch("code/patch.export.json")
 
         function startStop() {
             // resume audioContext on user activity, makes browser happy
-            audioContext.resume();
+            audioContext.resume().then(() => {
+                console.log('Playback resumed successfully');
+            });
             if (openingParam.value === 1) {
                 openingParam.value = 0
             } else {
