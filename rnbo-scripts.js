@@ -1,22 +1,34 @@
 var unityMod = 168;
+var unityModTwo = 10;
 var modParam;
 var audioContext;
 
 // get data from Unity C# script
 function useStringFromUnity(jsString) {
     unityMod = Number.parseFloat(jsString);
-    showTheUpdate()
-    setModParam()
+    setModParam();
+}
+
+function useValueFromUnity(unityFloat){
+    unityModTwo = Number.parseFloat(unityFloat);
+    showTheUpdate();
+    setModTwoParam();
 }
 
 // for debugging
 function showTheUpdate() {
-    console.log(`value of unityMod: ` + unityMod)
+    console.log(`value of unityModTwo: ` + unityModTwo)
 }
 // set the first modulation frequency from the unity c# script
 function setModParam() {
     if (modParam)
         modParam.value = Number.parseFloat(unityMod);
+}
+
+// set the second modulation frequency from the unity c# script
+function setModTwoParam() {
+    if (modTwoParam)
+        modTwoParam.value = Number.parseFloat(unityModTwo);
 }
 
 let WAContext = window.AudioContext || window.webkitAudioContext;
