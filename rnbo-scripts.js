@@ -28,7 +28,7 @@ function setModParam() {
 // set the second modulation frequency from the unity c# script
 function setModTwoParam() {
     if (modTwoParam)
-        modTwoParam.value = Number.parseFloat(unityModTwo);
+        modTwoParam.value = Math.abs(Number.parseFloat(unityModTwo)) * 10;
 }
 
 let WAContext = window.AudioContext || window.webkitAudioContext;
