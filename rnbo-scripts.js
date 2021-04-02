@@ -11,14 +11,15 @@ function useStringFromUnity(jsString) {
 
 function useValueFromUnity(unityFloat){
     unityModTwo = Number.parseFloat(unityFloat);
-    showTheUpdate();
+    // showTheUpdate();
     setModTwoParam();
 }
 
 // for debugging
-function showTheUpdate() {
-    console.log(`value of unityModTwo: ` + unityModTwo)
-}
+// function showTheUpdate() {
+//     console.log(`value of unityModTwo: ` + unityModTwo)
+// }
+
 // set the first modulation frequency from the unity c# script
 function setModParam() {
     if (modParam)
@@ -87,7 +88,7 @@ fetch("code/patch.export.json")
 
         // Listening to parameter events
         modTwoParam.changeEvent.subscribe(newValue => {
-            console.log(`modTwo set to ${newValue}`);
+            // console.log(`modTwo set to ${newValue}`);
         });
 
         // // get the second modulator frequency from the slider
