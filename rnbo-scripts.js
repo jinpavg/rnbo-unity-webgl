@@ -10,7 +10,7 @@ var audioContext;
 function useStringFromUnity(jsString) {
     unityMod = Number.parseFloat(jsString);
     setModParam();
-    jsSample = 1;
+    // jsSample = 1;
     setWhichSampleParam();
 }
 
@@ -39,7 +39,8 @@ function setModTwoParam() {
 // set which sample from the unity c# script
 function setWhichSampleParam() {
     if (whichSampleParam)
-        whichSampleParam.value = jsSample;
+        whichSampleParam.value = 0;
+        whichSampleParam.value = 3; // this is not an actual sample, but it got the rainstick to trigger
         console.log(`whichSampleParam: `+ whichSampleParam.value);
 }
 
