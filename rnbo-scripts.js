@@ -1,5 +1,6 @@
 var unityMod = 168;
 var unityModTwo = 10;
+var jsSample;
 var modParam;
 var modTwoParam;
 var whichSampleParam;
@@ -9,6 +10,7 @@ var audioContext;
 function useStringFromUnity(jsString) {
     unityMod = Number.parseFloat(jsString);
     setModParam();
+    jsSample = 1;
     setWhichSampleParam();
 }
 
@@ -37,7 +39,7 @@ function setModTwoParam() {
 // set which sample from the unity c# script
 function setWhichSampleParam() {
     if (whichSampleParam)
-        whichSampleParam.value = 2;
+        whichSampleParam.value = jsSample;
         console.log(`whichSampleParam: `+ whichSampleParam.value);
 }
 
@@ -150,7 +152,7 @@ fetch("code/patch.export.json")
 
         // Setting a parameter named "modTwo"
         modTwoParam = device.parametersById.get("modTwo");
-        modTwoParam.value = 0.1;
+        modTwoParam.value = Math.abs(Number.parseFloat(unityModTwo));
 
         // Listening to parameter events
         modTwoParam.changeEvent.subscribe(newValue => {
