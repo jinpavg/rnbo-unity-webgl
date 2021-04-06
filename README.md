@@ -17,4 +17,4 @@ Secondly, there is an issue with webgl code compression, I currently have it dis
 
 If you are trying to serve this site on a local server, you might need a setup like the ones described below to handle .gzip (which is currently not the way the game is being built)
 
-[webGL manual re: server settings](https://us04web.zoom.us/j/2671415526?pwd=U0dSRkpWTzZVTGJVZFZRck4yVW1yQT09)
+[webGL manual re: server settings](https://docs.unity3d.com/Manual/webgl-deploying.html)
