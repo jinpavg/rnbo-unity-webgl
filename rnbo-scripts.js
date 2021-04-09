@@ -1,12 +1,17 @@
 var unityMod = 168;
 var unityModTwo = 10;
+var jsSample;
 var modParam;
+var modTwoParam;
+var whichSampleParam;
 var audioContext;
 
 // get data from Unity C# script
 function useStringFromUnity(jsString) {
     unityMod = Number.parseFloat(jsString);
     setModParam();
+    // jsSample = 1;
+    setWhichSampleParam();
 }
 
 function useValueFromUnity(unityFloat){
@@ -31,6 +36,14 @@ function setModTwoParam() {
         modTwoParam.value = Math.abs(Number.parseFloat(unityModTwo)) * 10;
 }
 
+// set which sample from the unity c# script
+function setWhichSampleParam() {
+    if (whichSampleParam)
+        whichSampleParam.value = 0;
+        whichSampleParam.value = 3; // this is not an actual sample, but it got the rainstick to trigger
+        console.log(`whichSampleParam: `+ whichSampleParam.value);
+}
+
 let WAContext = window.AudioContext || window.webkitAudioContext;
 audioContext = new WAContext();
 
@@ -39,6 +52,8 @@ let outputNode = audioContext.createGain();
 outputNode.connect(audioContext.destination);
 
 let patcher;
+var presets = [];
+var samples = [];
 
 fetch("code/patch.export.json")
     .then((response) => response.json())
@@ -49,6 +64,31 @@ fetch("code/patch.export.json")
         patcher = responseJson;
     })
 
+    // Load and parse the presets file
+    .then(() => {
+        return fetch("data/patch.export.presets.json")
+    })
+
+    .then((presetsResponse) => {
+        return presetsResponse.json()
+    })
+
+    .then((presetsJson) => {
+        presets = presetsJson;
+    })
+
+    // Load and parse the samples file
+    .then(() => {
+        return fetch("data/patch.export.samples.json")
+    })
+
+    .then((samplesResponse) => {
+        return samplesResponse.json()
+    })
+
+    .then((samplesJson) => {
+        samples = samplesJson;
+    })
 
     // Use the fetched patcher to create a RNBO device
     .then(() => {
@@ -62,6 +102,36 @@ fetch("code/patch.export.json")
         // when device is ready, connect it to audio output
         device.node.connect(outputNode);
 
+        // If there are any samples to load, load them
+        var loadSample = (path, sampleid, device, audioContext) => {
+            return fetch(path)
+            .then((fileResponse) => {
+                if (fileResponse.ok)
+                    return fileResponse.arrayBuffer();
+
+                throw new Error("Couldn't find sample file at path " + path);
+            })
+            .then((arrayBuffer) => {
+                return new Promise((resolve, reject) => {
+                    audioContext.decodeAudioData(arrayBuffer, (buf) => resolve(buf), (err) => reject(err));
+                });
+            })
+            .then((decodedAudio) => {
+                return device.setDataBuffer(sampleid, decodedAudio);
+            })
+            .catch((err) => {
+                console.log("Couldn't load buffer with name " + sampleid);
+                console.error(err);
+            });
+        }
+
+        samples.forEach((sample) => {
+            // Samples paths are relative to the samples.json file
+            var samplePath = "data/" + sample.path;
+
+            // This is an asynchronous function, but we call it without waiting for the result
+            loadSample(samplePath, sample.name, device, audioContext);
+        }); 
 
         // Setting a parameter named "opening"
         let openingParam = device.parametersById.get("opening");
@@ -83,11 +153,20 @@ fetch("code/patch.export.json")
 
         // Setting a parameter named "modTwo"
         modTwoParam = device.parametersById.get("modTwo");
-        modTwoParam.value = 0.1;
+        modTwoParam.value = Math.abs(Number.parseFloat(unityModTwo));
 
         // Listening to parameter events
         modTwoParam.changeEvent.subscribe(newValue => {
             // console.log(`modTwo set to ${newValue}`);
+        });
+
+        // Setting a parameter named "whichSample"
+        whichSampleParam = device.parametersById.get("whichSample");
+        whichSampleParam.value = 2;
+
+        // Listening to parameter events
+        whichSampleParam.changeEvent.subscribe(newValue => {
+            console.log(`whichSample set to ${newValue}`);
         });
 
         // on off button with envelope
