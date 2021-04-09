@@ -1,11 +1,17 @@
+let patcher;
+var presets = [];
+var samples = [];
+var audioContext;
+
 var unityMod = 168;
 var unityModTwo = 10;
 var unityInt = 0;
+var sampleIndex;
+
 var modParam;
 var modTwoParam;
-var sampleIndex;
 var whichSampleParam;
-var audioContext;
+
 
 // get data from Unity C# script
 function useStringFromUnity(jsString) {
@@ -55,9 +61,7 @@ audioContext = new WAContext();
 let outputNode = audioContext.createGain();
 outputNode.connect(audioContext.destination);
 
-let patcher;
-var presets = [];
-var samples = [];
+outputNode.gain.setValueAtTime(0.2, audioContext.currentTime);
 
 fetch("code/patch.export.json")
     .then((response) => response.json())
