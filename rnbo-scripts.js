@@ -1,22 +1,27 @@
 var unityMod = 168;
 var unityModTwo = 10;
-var jsSample;
+var unityInt = 0;
 var modParam;
 var modTwoParam;
+var sampleIndex;
 var whichSampleParam;
 var audioContext;
 
 // get data from Unity C# script
 function useStringFromUnity(jsString) {
-    unityMod = Number.parseFloat(jsString);
+    unityMod = Number.parseFloat(jsString) * 15;
     setModParam();
-    // jsSample = 1;
-    setWhichSampleParam();
 }
 
 function useValueFromUnity(unityFloat){
-    unityModTwo = Number.parseFloat(unityFloat); // do I need parseFloat again here?
+    unityModTwo = Number.parseFloat(unityFloat);
     setModTwoParam();
+}
+
+function useSampleFromUnity(unityInt){
+    sampleIndex = unityInt;
+    console.log(`hi ${sampleIndex}`);
+    setWhichSampleParam();
 }
 
 // for debugging
@@ -27,21 +32,20 @@ function useValueFromUnity(unityFloat){
 // set the first modulation frequency from the unity c# script
 function setModParam() {
     if (modParam)
-        modParam.value = Number.parseFloat(unityMod);
+        modParam.value = unityMod;
 }
 
 // set the second modulation frequency from the unity c# script
 function setModTwoParam() {
     if (modTwoParam)
-        modTwoParam.value = Math.abs(Number.parseFloat(unityModTwo)) * 10;
+        modTwoParam.value = Math.abs(unityModTwo) * 10;
 }
 
 // set which sample from the unity c# script
 function setWhichSampleParam() {
     if (whichSampleParam)
-        whichSampleParam.value = 0;
-        whichSampleParam.value = 3; // this is not an actual sample, but it got the rainstick to trigger
-        console.log(`whichSampleParam: `+ whichSampleParam.value);
+        whichSampleParam.value = sampleIndex;
+//        console.log(`whichSampleParam: `+ whichSampleParam.value);
 }
 
 let WAContext = window.AudioContext || window.webkitAudioContext;
@@ -131,7 +135,12 @@ fetch("code/patch.export.json")
 
             // This is an asynchronous function, but we call it without waiting for the result
             loadSample(samplePath, sample.name, device, audioContext);
-        }); 
+        });
+
+       // set the first preset 
+        device.setPreset(
+            presets[0].preset
+          )
 
         // Setting a parameter named "opening"
         let openingParam = device.parametersById.get("opening");
@@ -162,7 +171,7 @@ fetch("code/patch.export.json")
 
         // Setting a parameter named "whichSample"
         whichSampleParam = device.parametersById.get("whichSample");
-        whichSampleParam.value = 2;
+        whichSampleParam.value = sampleIndex;
 
         // Listening to parameter events
         whichSampleParam.changeEvent.subscribe(newValue => {
