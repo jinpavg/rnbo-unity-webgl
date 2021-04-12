@@ -30,11 +30,6 @@ function useSampleFromUnity(unityInt){
     setWhichSampleParam();
 }
 
-// for debugging
-// function showTheUpdate() {
-//     console.log(`value of unityModTwo: ` + unityModTwo)
-// }
-
 // set the first modulation frequency from the unity c# script
 function setModParam() {
     if (modParam)
@@ -150,40 +145,20 @@ fetch("code/patch.export.json")
         let openingParam = device.parametersById.get("opening");
         openingParam.value = 0;
 
-        // Listening to parameter events
-        openingParam.changeEvent.subscribe(newValue => {
-            console.log(`opening set to ${newValue}`);
-        });
-
         // Setting a parameter named "mod"
         modParam = device.parametersById.get("mod");
         modParam.value = Number.parseFloat(unityMod);
-
-        // Listening to parameter events
-        modParam.changeEvent.subscribe(newValue => {
-            console.log(`mod set to ${newValue}`);
-        });
 
         // Setting a parameter named "modTwo"
         modTwoParam = device.parametersById.get("modTwo");
         modTwoParam.value = Math.abs(Number.parseFloat(unityModTwo));
 
-        // Listening to parameter events
-        modTwoParam.changeEvent.subscribe(newValue => {
-            // console.log(`modTwo set to ${newValue}`);
-        });
-
         // Setting a parameter named "whichSample"
         whichSampleParam = device.parametersById.get("whichSample");
         whichSampleParam.value = sampleIndex;
 
-        // Listening to parameter events
-        whichSampleParam.changeEvent.subscribe(newValue => {
-            console.log(`whichSample set to ${newValue}`);
-        });
-
         // on off button with envelope
-        document.querySelector('#turn-off').addEventListener('click', startStop);
+        document.querySelector('#turn-off').addEventListener('click', function(){startStop()});
 
         function startStop() {
             // resume audioContext on user activity, makes browser happy
