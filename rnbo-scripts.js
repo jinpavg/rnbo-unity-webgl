@@ -1,16 +1,17 @@
 let patcher;
-var presets = [];
-var samples = [];
-var audioContext;
+let myDevice;
+let presets = [];
+let samples = [];
+let audioContext;
 
-var unityMod = 168;
-var unityModTwo = 10;
-var unityInt = 0;
-var sampleIndex;
+let unityMod = 168;
+let unityModTwo = 10;
+let unityInt = 0;
+let sampleIndex;
 
-var modParam;
-var modTwoParam;
-var whichSampleParam;
+let modParam;
+let modTwoParam;
+let whichSampleParam;
 
 
 // get data from Unity C# script
@@ -26,8 +27,7 @@ function useValueFromUnity(unityFloat){
 
 function useSampleFromUnity(unityInt){
     sampleIndex = unityInt;
-    console.log(`hi ${sampleIndex}`);
-    setWhichSampleParam();
+    sendSampleMessage(sampleIndex);
 }
 
 // set the first modulation frequency from the unity c# script
@@ -42,11 +42,19 @@ function setModTwoParam() {
         modTwoParam.value = Math.abs(unityModTwo) * 10;
 }
 
-// set which sample from the unity c# script
-function setWhichSampleParam() {
-    if (whichSampleParam)
-        whichSampleParam.value = sampleIndex;
-//        console.log(`whichSampleParam: `+ whichSampleParam.value);
+//set which sample from the unity c# script
+// function setWhichSampleParam() {
+//     if (whichSampleParam)
+//         whichSampleParam.value = sampleIndex;
+// }
+
+function sendSampleMessage(sampleIndex) {
+    if (myDevice) {
+        let messageBody = [sampleIndex];
+        let messageEvent = new RNBO.MessageEvent(RNBO.TimeNow, "thisSample", messageBody);
+        myDevice.scheduleEvent(messageEvent);
+        console.log(`happily playing sample ${sampleIndex}`);
+    }
 }
 
 let WAContext = window.AudioContext || window.webkitAudioContext;
@@ -103,6 +111,7 @@ fetch("code/patch.export.json")
 
     .then((device) => {
         // when device is ready, connect it to audio output
+        myDevice = device;
         device.node.connect(outputNode);
 
         // If there are any samples to load, load them
@@ -136,9 +145,9 @@ fetch("code/patch.export.json")
             loadSample(samplePath, sample.name, device, audioContext);
         });
 
-       // set the first preset 
+       // set the third preset 
         device.setPreset(
-            presets[0].preset
+            presets[2].preset
           )
 
         // Setting a parameter named "opening"

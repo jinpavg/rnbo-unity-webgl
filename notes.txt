@@ -1,5 +1,8 @@
 my prototype is using the patch "larger-no-multibuffer.maxpat"
 
+need to add this Sample message to patch
+look down below for Sam ideas
+
 
 todo
 
@@ -73,3 +76,52 @@ part 2?
 
 samples
 presets 
+
+
+
+
+
+
+
+
+
+
+
+Sam stuff:
+
+instead of having different functions for sending values of different kinds from C# to different places in JS,
+have one fxn in jslib that takes a param and a value as arguments
+
+
+in js
+
+
+
+
+
+const scalers = {
+    freq: (f) => { return f * 15}
+};
+
+function updateParamWithString(paramName, str) {
+    let param = myDevice.getParamById(paramName);
+    let val = Number.parseFloat(str);
+    if (scalers[paramName]) val = scalers[paramName](val); 
+    if (param) param.value = val;
+}
+
+
+
+
+in jslib
+
+
+
+setParamWithString: function(param, utf8String) {
+    updateParamWithString();
+  },
+
+
+setParamWithFloat: function(param, float) {
+    updateParamWithFloat();
+},
