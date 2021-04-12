@@ -29,11 +29,49 @@ In this guide, I've broken the process into 4 phases based on the different type
 
 ## Phase 0: Tips to avoid pain
 
-- be testing on https, due to audio in the browser and also TLS issues
-- make sure to include an opt-in from the user to audio in your javascript, or browsers like chrome won't let your audio start
-- if you are using a local testing server, you might have issues with its configuration (especially with compressed js files using gzip)
-- i'm using Unity 2020.3.x
-- don't use .aif, chrome won't be happy. use .wav or .mp3
+I am new to web development. As I began this project, I experienced some pain. Please learn from my pain and follow these tips.
+
+### Test on HTTPS
+
+In order to build and test your web application, you will need to run a simple, local HTTP Server that can serve the static files. The best way to do that might depend on your system but two options are
+
+- Python's built-in simple HTTPServer, see this [MDN Guide](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/set_up_a_local_testing_server)
+- The http-server package available [via NPM](https://www.npmjs.com/package/http-server)
+
+Now, the painful part: you may run into issues if you aren't using HTTPS. For example, if you try to access the web page on another machine (like a second computer in your office), your RNBO device may not run at all. In fact, many browsers have safeguards that stop audio processing from working as you might expect if the connection is not secure.
+
+So for this reason, you'll want to test on a secure connection. For example, if you are using the `http-server` package, you could follow [these instructions](https://www.npmjs.com/package/http-server#tlsssl).
+
+### Make sure your local testing server is configured for compressed .js files
+
+If you are using a local testing server, you might have issues with its configuration (especially with compressed js files using gzip or brotli). For this, you'll want to search for the way to configure your server to serve up these compressed files. For example, with `http-server` you could use these ["available options"](https://www.npmjs.com/package/http-server#available-options).
+
+### Opt-in from user for browser audio
+
+Make sure to include an opt-in from the user to audio in your javascript, or browsers like chrome won't let your audio start. This generally means including
+
+```js
+audioContext.resume()
+```
+somewhere in an element that a user will click on. For example, I have an on/off button and instructions for the user to begin by clicking this button. 
+
+```js
+function startButton() {
+    // resume audioContext on user activity, makes browser happy
+    audioContext.resume().then(() => {
+        console.log('Playback resumed successfully');
+    });
+}
+```
+
+### Chrome doesn't like your `.aif` files
+
+If you are copying sample dependencies in your RNBO export, make sure to use `.wav` or `.mp3` files rather than `.aif`. 
+
+### Unity version
+
+And finally, as a word of caution, I'm using Unity 2020.3.x for the purposes of this tutorial. Many things have changed between 2018 and 2021 in terms of how Unity exports and compresses code for its WebGL builds. Some of what I describe in this tutorial may not work with a Unity 2018.xx version, or might require adjustment.
+
 
 ## Phase I: RNBO phase
 
