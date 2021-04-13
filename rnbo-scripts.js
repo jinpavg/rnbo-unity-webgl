@@ -115,7 +115,7 @@ fetch("code/patch.export.json")
         device.node.connect(outputNode);
 
         // If there are any samples to load, load them
-        var loadSample = (path, sampleid, device, audioContext) => {
+        let loadSample = (path, sampleid, device, audioContext) => {
             return fetch(path)
             .then((fileResponse) => {
                 if (fileResponse.ok)
@@ -139,7 +139,7 @@ fetch("code/patch.export.json")
 
         samples.forEach((sample) => {
             // Samples paths are relative to the samples.json file
-            var samplePath = "data/" + sample.path;
+            let samplePath = "data/" + sample.path;
 
             // This is an asynchronous function, but we call it without waiting for the result
             loadSample(samplePath, sample.name, device, audioContext);
@@ -147,7 +147,7 @@ fetch("code/patch.export.json")
 
        // set the third preset 
         device.setPreset(
-            presets[2].preset
+            presets[0].preset
           )
 
         // Setting a parameter named "opening"
