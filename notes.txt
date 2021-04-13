@@ -1,6 +1,6 @@
 my prototype is using the patch "larger-no-multibuffer.maxpat"
 
-need to add this Sample message to patch
+need to add thisSample message to patch
 look down below for Sam ideas
 
 

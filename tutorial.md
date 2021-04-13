@@ -56,11 +56,16 @@ audioContext.resume()
 somewhere in an element that a user will click on. For example, I have an on/off button and instructions for the user to begin by clicking this button. 
 
 ```js
-function startButton() {
+function startStop() {
     // resume audioContext on user activity, makes browser happy
     audioContext.resume().then(() => {
         console.log('Playback resumed successfully');
     });
+    if (openingParam.value === 1) {
+        openingParam.value = 0
+    } else {
+        openingParam.value = 1
+    }
 }
 ```
 
