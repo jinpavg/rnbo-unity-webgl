@@ -8,6 +8,8 @@ todo
 
 sample triggering by message instead of param?
 
+warn in tutorial that it's two underscores in __Import
+
 
 projectile launch could launch sample?
 or many diff color cubes could spawn, each with different sample

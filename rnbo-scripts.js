@@ -10,11 +10,17 @@ let presetIndex = 1;
 let modParam;
 let modTwoParam;
 
-// function updateParamWithFloat(paramName, float) {
-//     let param = myDevice.getParamById(paramName);
-//     let val = float;
-//     if (param) param.value = val;
-// }
+function updateParamWithFloat(paramName, float) {
+    // let param = myDevice.getParamById(paramName);
+    // let val = float;
+    // if (param) param.value = val;
+    console.log(paramName + float);
+}
+
+function getIndexFromUnity(arrayName, int) {
+    console.log(arrayName + int);
+
+}
 
 // get data from Unity C# script
 function useStringFromUnity(jsString) {
