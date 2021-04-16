@@ -4,51 +4,30 @@ let presets = [];
 let samples = [];
 let audioContext;
 
-let unityMod = 168;
-let unityModTwo = 10;
-let unityInt = 0;
-let sampleIndex;
+let sampleIndex = 0;
+let presetIndex = 1;
 
 let modParam;
 let modTwoParam;
-let whichSampleParam;
 
+// function updateParamWithFloat(paramName, float) {
+//     let param = myDevice.getParamById(paramName);
+//     let val = float;
+//     if (param) param.value = val;
+// }
 
 // get data from Unity C# script
 function useStringFromUnity(jsString) {
-    unityMod = Number.parseFloat(jsString) * 15;
-    setModParam();
+    if (modParam)
+        modParam.value = Number.parseFloat(jsString) * 15;
 }
 
 function useValueFromUnity(unityFloat){
-    unityModTwo = Number.parseFloat(unityFloat);
-    setModTwoParam();
-}
-
-function useSampleFromUnity(unityInt){
-    sampleIndex = unityInt;
-    sendSampleMessage(sampleIndex);
-}
-
-// set the first modulation frequency from the unity c# script
-function setModParam() {
-    if (modParam)
-        modParam.value = unityMod;
-}
-
-// set the second modulation frequency from the unity c# script
-function setModTwoParam() {
     if (modTwoParam)
-        modTwoParam.value = Math.abs(unityModTwo) * 10;
+        modTwoParam.value = Math.abs(Number.parseFloat(unityFloat)) * 10;
 }
 
-//set which sample from the unity c# script
-// function setWhichSampleParam() {
-//     if (whichSampleParam)
-//         whichSampleParam.value = sampleIndex;
-// }
-
-function sendSampleMessage(sampleIndex) {
+function useSampleFromUnity(sampleIndex){
     if (myDevice) {
         let messageBody = [sampleIndex];
         let messageEvent = new RNBO.MessageEvent(RNBO.TimeNow, "thisSample", messageBody);
@@ -56,6 +35,12 @@ function sendSampleMessage(sampleIndex) {
         console.log(`happily playing sample ${sampleIndex}`);
     }
 }
+
+// set the first modulation frequency from the unity c# script
+// function setModParam() {
+//     if (modParam)
+//         modParam.value = unityMod;
+// }
 
 let WAContext = window.AudioContext || window.webkitAudioContext;
 audioContext = new WAContext();
@@ -145,9 +130,9 @@ fetch("code/patch.export.json")
             loadSample(samplePath, sample.name, device, audioContext);
         });
 
-       // set the third preset 
+       // set the preset 
         device.setPreset(
-            presets[0].preset
+            presets[presetIndex].preset
           )
 
         // Setting a parameter named "opening"
@@ -156,15 +141,11 @@ fetch("code/patch.export.json")
 
         // Setting a parameter named "mod"
         modParam = device.parametersById.get("mod");
-        modParam.value = Number.parseFloat(unityMod);
+        modParam.value = 10;
 
         // Setting a parameter named "modTwo"
         modTwoParam = device.parametersById.get("modTwo");
-        modTwoParam.value = Math.abs(Number.parseFloat(unityModTwo));
-
-        // Setting a parameter named "whichSample"
-        whichSampleParam = device.parametersById.get("whichSample");
-        whichSampleParam.value = sampleIndex;
+        modTwoParam.value = 10;
 
         // on off button with envelope
         document.querySelector('#turn-off').addEventListener('click', function(){startStop()});

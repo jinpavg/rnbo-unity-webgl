@@ -110,6 +110,12 @@ function updateParamWithString(paramName, str) {
     if (param) param.value = val;
 }
 
+function updateParamWithFloat(paramName, float) {
+    let param = myDevice.getParamById(paramName);
+    let val = float;
+    if (param) param.value = val;
+}
+
 
 
 
