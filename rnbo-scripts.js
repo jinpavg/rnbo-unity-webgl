@@ -1,11 +1,18 @@
-var unityMod = 168;
-var unityModTwo = 10;
-var unityInt = 0;
-var modParam;
-var modTwoParam;
-var sampleIndex;
-var whichSampleParam;
-var audioContext;
+let patcher;
+let myDevice;
+let presets = [];
+let samples = [];
+let audioContext;
+
+let unityMod = 168;
+let unityModTwo = 10;
+let unityInt = 0;
+let sampleIndex;
+
+let modParam;
+let modTwoParam;
+let whichSampleParam;
+
 
 // get data from Unity C# script
 function useStringFromUnity(jsString) {
@@ -20,14 +27,8 @@ function useValueFromUnity(unityFloat){
 
 function useSampleFromUnity(unityInt){
     sampleIndex = unityInt;
-    console.log(`hi ${sampleIndex}`);
-    setWhichSampleParam();
+    sendSampleMessage(sampleIndex);
 }
-
-// for debugging
-// function showTheUpdate() {
-//     console.log(`value of unityModTwo: ` + unityModTwo)
-// }
 
 // set the first modulation frequency from the unity c# script
 function setModParam() {
@@ -41,11 +42,19 @@ function setModTwoParam() {
         modTwoParam.value = Math.abs(unityModTwo) * 10;
 }
 
-// set which sample from the unity c# script
-function setWhichSampleParam() {
-    if (whichSampleParam)
-        whichSampleParam.value = sampleIndex;
-//        console.log(`whichSampleParam: `+ whichSampleParam.value);
+//set which sample from the unity c# script
+// function setWhichSampleParam() {
+//     if (whichSampleParam)
+//         whichSampleParam.value = sampleIndex;
+// }
+
+function sendSampleMessage(sampleIndex) {
+    if (myDevice) {
+        let messageBody = [sampleIndex];
+        let messageEvent = new RNBO.MessageEvent(RNBO.TimeNow, "thisSample", messageBody);
+        myDevice.scheduleEvent(messageEvent);
+        console.log(`happily playing sample ${sampleIndex}`);
+    }
 }
 
 let WAContext = window.AudioContext || window.webkitAudioContext;
@@ -55,9 +64,7 @@ audioContext = new WAContext();
 let outputNode = audioContext.createGain();
 outputNode.connect(audioContext.destination);
 
-let patcher;
-var presets = [];
-var samples = [];
+outputNode.gain.setValueAtTime(0.2, audioContext.currentTime);
 
 fetch("code/patch.export.json")
     .then((response) => response.json())
@@ -104,10 +111,11 @@ fetch("code/patch.export.json")
 
     .then((device) => {
         // when device is ready, connect it to audio output
+        myDevice = device;
         device.node.connect(outputNode);
 
         // If there are any samples to load, load them
-        var loadSample = (path, sampleid, device, audioContext) => {
+        let loadSample = (path, sampleid, device, audioContext) => {
             return fetch(path)
             .then((fileResponse) => {
                 if (fileResponse.ok)
@@ -131,13 +139,13 @@ fetch("code/patch.export.json")
 
         samples.forEach((sample) => {
             // Samples paths are relative to the samples.json file
-            var samplePath = "data/" + sample.path;
+            let samplePath = "data/" + sample.path;
 
             // This is an asynchronous function, but we call it without waiting for the result
             loadSample(samplePath, sample.name, device, audioContext);
         });
 
-       // set the first preset 
+       // set the third preset 
         device.setPreset(
             presets[0].preset
           )
@@ -146,40 +154,20 @@ fetch("code/patch.export.json")
         let openingParam = device.parametersById.get("opening");
         openingParam.value = 0;
 
-        // Listening to parameter events
-        openingParam.changeEvent.subscribe(newValue => {
-            console.log(`opening set to ${newValue}`);
-        });
-
         // Setting a parameter named "mod"
         modParam = device.parametersById.get("mod");
         modParam.value = Number.parseFloat(unityMod);
-
-        // Listening to parameter events
-        modParam.changeEvent.subscribe(newValue => {
-            console.log(`mod set to ${newValue}`);
-        });
 
         // Setting a parameter named "modTwo"
         modTwoParam = device.parametersById.get("modTwo");
         modTwoParam.value = Math.abs(Number.parseFloat(unityModTwo));
 
-        // Listening to parameter events
-        modTwoParam.changeEvent.subscribe(newValue => {
-            // console.log(`modTwo set to ${newValue}`);
-        });
-
         // Setting a parameter named "whichSample"
         whichSampleParam = device.parametersById.get("whichSample");
         whichSampleParam.value = sampleIndex;
 
-        // Listening to parameter events
-        whichSampleParam.changeEvent.subscribe(newValue => {
-            console.log(`whichSample set to ${newValue}`);
-        });
-
         // on off button with envelope
-        document.querySelector('#turn-off').addEventListener('click', startStop);
+        document.querySelector('#turn-off').addEventListener('click', function(){startStop()});
 
         function startStop() {
             // resume audioContext on user activity, makes browser happy
