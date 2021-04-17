@@ -5,32 +5,28 @@ let samples = [];
 let audioContext;
 
 let sampleIndex = 0;
-let presetIndex = 1;
-
-let modParam;
-let modTwoParam;
+let presetIndex = 0;
 
 function updateParamWithFloat(paramName, float) {
-    // let param = myDevice.getParamById(paramName);
-    // let val = float;
-    // if (param) param.value = val;
-    console.log(paramName + float);
+    let param = myDevice.parametersById.get(paramName);
+    let val = Math.abs(float * 20);
+    if (param) param.value = val;
 }
 
 function getIndexFromUnity(arrayName, int) {
-    console.log(arrayName + int);
-
+    //console.log(arrayName + int);
+    myDevice.setPreset(
+        presets[int].preset
+      )
 }
 
-// get data from Unity C# script
+// // get data from Unity C# script
 function useStringFromUnity(jsString) {
-    if (modParam)
-        modParam.value = Number.parseFloat(jsString) * 15;
+    //console.log(`welp` + jsString);
 }
 
 function useValueFromUnity(unityFloat){
-    if (modTwoParam)
-        modTwoParam.value = Math.abs(Number.parseFloat(unityFloat)) * 10;
+    //console.log(`hi world` + unityFloat);
 }
 
 function useSampleFromUnity(sampleIndex){
@@ -38,15 +34,9 @@ function useSampleFromUnity(sampleIndex){
         let messageBody = [sampleIndex];
         let messageEvent = new RNBO.MessageEvent(RNBO.TimeNow, "thisSample", messageBody);
         myDevice.scheduleEvent(messageEvent);
-        console.log(`happily playing sample ${sampleIndex}`);
+        //console.log(`happily playing sample ${sampleIndex}`);
     }
 }
-
-// set the first modulation frequency from the unity c# script
-// function setModParam() {
-//     if (modParam)
-//         modParam.value = unityMod;
-// }
 
 let WAContext = window.AudioContext || window.webkitAudioContext;
 audioContext = new WAContext();
@@ -136,22 +126,9 @@ fetch("code/patch.export.json")
             loadSample(samplePath, sample.name, device, audioContext);
         });
 
-       // set the preset 
-        device.setPreset(
-            presets[presetIndex].preset
-          )
-
         // Setting a parameter named "opening"
         let openingParam = device.parametersById.get("opening");
         openingParam.value = 0;
-
-        // Setting a parameter named "mod"
-        modParam = device.parametersById.get("mod");
-        modParam.value = 10;
-
-        // Setting a parameter named "modTwo"
-        modTwoParam = device.parametersById.get("modTwo");
-        modTwoParam.value = 10;
 
         // on off button with envelope
         document.querySelector('#turn-off').addEventListener('click', function(){startStop()});
