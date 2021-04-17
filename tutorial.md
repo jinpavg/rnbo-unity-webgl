@@ -75,14 +75,29 @@ If you are copying sample dependencies in your RNBO export, make sure to use `.w
 
 ### Unity version
 
-And finally, as a word of caution, I'm using Unity 2020.3.x for the purposes of this tutorial. Many things have changed between 2018 and 2021 in terms of how Unity exports and compresses code for its WebGL builds. Some of what I describe in this tutorial may not work with a Unity 2018.xx version, or might require adjustment.
+And finally, as a word of caution, I'm using Unity 2020.3.x for the purposes of this tutorial. Many things have changed between 2018 and 2021 in terms of how Unity exports and compresses code for its WebGL builds. Some of what I describe in this tutorial may not work with a Unity 2018.xx version, or might require adjustment. In addition, there are some active Unity bugs regarding compression of WebGL Build files that may be fixed after the writing of this tutorial.
 
 
 ## Phase I: RNBO phase
 
-RNBO -> JSON export
-- include presets if you are going to use them
-- include samples if you are going to use them
+So you've built your RNBO device, the engine for your cool generative audio video game. In the simple example patch included with this tutorial, you can see a `[rnbo~]` with parameters, an inport for receiving messages, and several `[buffer~]` objects within RNBO that hold our samples. You can learn more about communications in and out of your RNBO device [in the documentation](https://rnbo.cycling74.com/docs/rnbo_communications_topic?v=).
+
+If you unlock the patcher, select the `[rnbo~]` object, and look at the object snapshots, you'll see that there are three snapshots with filled-in circles indicating that these snapshots are saved with the device. These snapshots will become our presets when we export the device.
+![snapshots](/img/snapshots.png)
+The first key to the RNBO-Unity WebGL connection is to export your RNBO patch with the JSON Export target. 
+![target export](/img/JSON.png)
+In "Configuration," if you are using presets and samples, make sure to check the box for "Include Presets" and "Generate Sample Dependencies File." If you select "Copy Sample Dependencies," the export will generate a handy `/media` directory filled with all of your samples. 
+![media directory](/img/media.png)
+I will urge you here to make sure that your samples are in the `.wav` or `.mp3` format rather than `.aif`, as Chrome and other browsers might reject the `.aif` files. 
+
+You also want to have "Codegen: Generate WASM Output" selected, as this can greatly improve the device's performance in the browser.
+
+When you are ready to export the device, it's preset dependencies, and sample depencies, select an Output Directory and Export to Selected Target.
+![choose output](/img/output.png)
+
+You should now have, in your chosen directory, a `/code` folder containing your patch as a `.json` file, a `/data` folder containing your preset and sample data, also as `.json` files, and a `/media` folder full of the samples themselves.
+![export folder](/img/export.png)
+We will need all of these files and folders when we are building our web application. 
 
 ## Phase II: Javascript/C# phase
 
