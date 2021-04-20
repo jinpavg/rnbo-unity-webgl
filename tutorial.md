@@ -120,6 +120,7 @@ As the Web App tutorial describes, we will need the RNBO Javascript library in o
 <script type="text/javascript" src="https://c74-public.nyc3.digitaloceanspaces.com/rnbo/0.10.0/rnbo.min.js"></script>
 ```
 This `index.html` file should be in the root directory of your web application:
+
 ![root](/img/root-dir.png)
 
 With this library, you can now fetch your local patch JSON and load it into a RNBO device that you create. You can do that with code like the following, either inside of a `<script>` tag or its own `.js` file.
