@@ -9,7 +9,7 @@ Even if Unity WebGL allowed for more complex Web Audio API functionality, I'd ha
 
 With RNBO, I can patch the generative audio engine of my dreams, and then use that as the audio engine for a Unity WebGL game. I believe this to be extremely exciting due to our ability—especially as Max users who are not necessarily web developers—to create new types of user interfaces for music and audio in the browser, and for sharing musical work in new interactive ways, particularly after a year of Zoom-concert fatigue. 
 
-![the unity/rnbo toolchain](img/map-placeholder.png)
+![the unity/rnbo toolchain](img/Map.png)
 
 ## To Bridge These Realms
 
@@ -29,53 +29,12 @@ In this guide, I've broken the process into 4 phases based on the different type
 
 ## Phase 0: Tips to avoid pain
 
-I am new to web development. As I began this project, I experienced some pain. Please learn from my pain and follow these tips.
+I am new to web development. As I began this project, I experienced some pain. Please learn from my pain and follow these tips. I'll include a longer discussion of these pain-avoidance methods at the end of this tutorial, but to summarize:
 
-### Test on HTTPS
-
-In order to build and test your web application, you will need to run a simple, local HTTP Server that can serve the static files. The best way to do that might depend on your system but two options are
-
-- Python's built-in simple HTTPServer, see this [MDN Guide](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/set_up_a_local_testing_server)
-- The http-server package available [via NPM](https://www.npmjs.com/package/http-server)
-
-Now, the painful part: you may run into issues if you aren't using HTTPS. For example, if you try to access the web page on another machine (like a second computer in your office), your RNBO device may not run at all. In fact, many browsers have safeguards that stop audio processing from working as you might expect if the connection is not secure.
-
-So for this reason, you'll want to test on a secure connection. For example, if you are using the `http-server` package, you could follow [these instructions](https://www.npmjs.com/package/http-server#tlsssl).
-
-### Make sure your local testing server is configured for compressed .js files
-
-If you are using a local testing server, you might have issues with its configuration (especially with compressed js files using gzip or brotli). For this, you'll want to search for the way to configure your server to serve up these compressed files. For example, with `http-server` you could use these ["available options"](https://www.npmjs.com/package/http-server#available-options).
-
-### Opt-in from user for browser audio
-
-Make sure to include an opt-in from the user to audio in your javascript, or browsers like chrome won't let your audio start. This generally means including
-
-```js
-AudioContext.resume()
-```
-somewhere in an element that a user will click on. For example, I have an on/off button and instructions for the user to begin by clicking this button. 
-
-```js
-function startStop() {
-    // resume audio context on user activity, makes browser happy
-    context.resume().then(() => {
-        console.log('Playback resumed successfully');
-    });
-    if (openingParam.value === 1) {
-        openingParam.value = 0
-    } else {
-        openingParam.value = 1
-    }
-}
-```
-
-### Chrome doesn't like your `.aif` files
-
-If you are copying sample dependencies in your RNBO export, make sure to use `.wav` or `.mp3` files rather than `.aif`. 
-
-### Unity version
-
-And finally, as a word of caution, I'm using Unity 2020.3.x for the purposes of this tutorial. Many things have changed between 2018 and 2021 in terms of how Unity exports and compresses code for its WebGL builds. Some of what I describe in this tutorial may not work with a Unity 2018.xx version, or might require adjustment. In addition, there are some active Unity bugs regarding compression of WebGL Build files that may be fixed after the writing of this tutorial.
+- Test on HTTPS
+- Make sure your local testing server is configured for compressed .js files
+- Inlude an Opt-in from user for browser audio
+- Use `.wav` or `.mp3` rather than `.aif`
 
 
 ## Phase I: RNBO phase
@@ -158,15 +117,15 @@ Let's call that frequency parameter `"modTwo"`, and let's say that the player's 
 
 We need a process that works like this:
 
-1. player moves in a horizontal direction
-2. a value representing that horizontal location is sent to our RNBO device
-3. that value updates the parameter "modTwo"
+- player moves in a horizontal direction
+- a value representing that horizontal location is sent to our RNBO device
+- that value updates the parameter "modTwo"
 
-We can do that with three steps:
+We can do that with three elements:
 
-1. define a function in our javascript that takes a parameter and a float as arguments, then sets the value of that parameter with that float
-2. create a plugin containing a *second* function we can use in our C# script to pass the data we need to the javascript function
-3. import the function into a C# script that will use that function
+1. define a **function in our javascript** that takes a parameter and a float as arguments, then sets the value of that parameter with that float
+2. **create a plugin** containing a *second* function we can use in our C# script to pass the data we need to the javascript function
+3. **import the function** into a C# script that will use that function and pass it a string, `"ModTwo"` and a float, the horizontal location value.
 
 Our Javascript function could look something like:
 
@@ -277,7 +236,7 @@ Now, assuming that our C# scripts are components of their appropriate Game Objec
 
 In "Build Settings," check the scene(s) you want to include in the build, select "WebGL" and click "Switch Platform" if WebGL is not your current platform. 
 
-Next, click "Player Settings," scroll down to "Publishing Settings," and turn the Compression Format to "Disabled." This is obviously not ideal for larger game builds, but this tutorial will only work with this setting due to an active Unity bug at its time of writing.
+Next, click "Player Settings," scroll down to "Publishing Settings," and turn the Compression Format to "Disabled." This is obviously not ideal for larger game builds, but this tutorial will only work with this setting due to an active [Unity bug](https://forum.unity.com/threads/uncaught-referenceerror-unityframework-is-not-defined-at-htmlscriptelement-script-onload-webgl.803967/) at its time of writing.
 
 ![compression disabled](/img/comp-disabled.png)
 
@@ -368,88 +327,58 @@ You will also need the following `<script>` tag, in order to load the files from
   </script>
 ```
 
-Again, you may not need all of the above, depending on how you are integrating your Unity game. This is simply the most standard configuration, the Unity WebGL template.
+Again, you may not need all of the above, depending on how you are configuring your Unity game. This is simply the most standard configuration.
 
 ### You Made It
 
 You've made it. Serve up that web app with your secure connection, click somewhere on the page to trigger your `AudioContext.resume()`, and use the left and right arrow keys to change your modulation parameter. You've got generative audio in a Unity WebGL game!
 
-Next up: Change Presets and send messages to your RNBO device to trigger samples in-game.
+*Next up: Change Presets and send messages to your RNBO device to trigger samples in-game.*
 
-## part 2: samples and presets
+## Appendix: Tips to avoid pain (verbose)
 
-- samples: use message events, triggered by collision for example to trigger samples
+### Test on HTTPS
 
-- presets: can use game state or collision, for example, to set preset 
+In order to build and test your web application, you will need to run a simple, local HTTP Server that can serve the static files. The best way to do that might depend on your system but two options are
 
+- Python's built-in simple HTTPServer, see this [MDN Guide](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/set_up_a_local_testing_server)
+- The http-server package available [via NPM](https://www.npmjs.com/package/http-server)
 
-If we want to load presets and samples, we'll need to initialize
+Now, the painful part: you may run into issues if you aren't using HTTPS. For example, if you try to access the web page on another machine (like a second computer in your office), your RNBO device may not run at all. In fact, many browsers have safeguards that stop audio processing from working as you might expect if the connection is not secure.
+
+So for this reason, you'll want to test on a secure connection. For example, if you are using the `http-server` package, you could follow [these instructions](https://www.npmjs.com/package/http-server#tlsssl).
+
+### Make sure your local testing server is configured for compressed .js files
+
+If you are using a local testing server, you might have issues with its configuration (especially with compressed js files using gzip or brotli). For this, you'll want to search for the way to configure your server to serve up these compressed files. For example, with `http-server` you could use these ["available options"](https://www.npmjs.com/package/http-server#available-options).
+
+### Opt-in from user for browser audio
+
+Make sure to include an opt-in from the user to audio in your javascript, or browsers like chrome won't let your audio start. This generally means including
 
 ```js
-let presets = [];
-let samples = [];
+AudioContext.resume()
 ```
-We'll also want to add, after we fetch our `patch.export.json`:
+somewhere in an element that a user will click on. For example, I have an on/off button and instructions for the user to begin by clicking this button. 
 
 ```js
-// Load and parse the presets file
-.then(() => {
-    return fetch("data/patch.export.presets.json")
-})
-
-.then((presetsResponse) => {
-    return presetsResponse.json()
-})
-
-.then((presetsJson) => {
-    presets = presetsJson;
-})
-
-// Load and parse the samples file
-.then(() => {
-    return fetch("data/patch.export.samples.json")
-})
-
-.then((samplesResponse) => {
-    return samplesResponse.json()
-})
-
-.then((samplesJson) => {
-    samples = samplesJson;
-})
-```
-and also, after we've connected our device to audio output, inside of that same Promise callback, 
-
-```js
-// If there are any samples to load, load them
-let loadSample = (path, sampleid, device, audioContext) => {
-    return fetch(path)
-    .then((fileResponse) => {
-        if (fileResponse.ok)
-            return fileResponse.arrayBuffer();
-
-        throw new Error("Couldn't find sample file at path " + path);
-    })
-    .then((arrayBuffer) => {
-        return new Promise((resolve, reject) => {
-            audioContext.decodeAudioData(arrayBuffer, (buf) => resolve(buf), (err) => reject(err));
-        });
-    })
-    .then((decodedAudio) => {
-        return device.setDataBuffer(sampleid, decodedAudio);
-    })
-    .catch((err) => {
-        console.log("Couldn't load buffer with name " + sampleid);
-        console.error(err);
+function startStop() {
+    // resume audio context on user activity, makes browser happy
+    context.resume().then(() => {
+        console.log('Playback resumed successfully');
     });
+    if (openingParam.value === 1) {
+        openingParam.value = 0
+    } else {
+        openingParam.value = 1
+    }
 }
-
-samples.forEach((sample) => {
-    // Samples paths are relative to the samples.json file
-    let samplePath = "data/" + sample.path;
-
-    // This is an asynchronous function, but we call it without waiting for the result
-    loadSample(samplePath, sample.name, device, context);
-});
 ```
-To see this all in one place, you can look in the example file associated with this tutorial, `rnbo-scripts.js`.
+
+### Chrome doesn't like your `.aif` files
+
+If you are copying sample dependencies in your RNBO export, make sure to use `.wav` or `.mp3` files rather than `.aif`. 
+
+### Unity version
+
+And finally, as a word of caution, I'm using Unity 2020.3.x for the purposes of this tutorial. [Many things have changed](https://forum.unity.com/threads/changes-to-the-webgl-loader-and-templates-introduced-in-unity-2020-1.817698/) between 2018 and 2021 in terms of how Unity exports and compresses code for its WebGL builds. Some of what I describe in this tutorial may not work with a Unity 2018.xx version, or might require adjustment. In addition, there are some active Unity bugs regarding compression of WebGL Build files that may be fixed after the writing of this tutorial.
