@@ -85,3 +85,9 @@ and also, after we've connected our device to audio output:
 })
 ```
 To see this all in one place, you can look in the example file associated with this tutorial, `rnbo-scripts.js`.
+
+## Setting up our `.jslib`
+
+To illustrate how we could send a message to trigger a sample, 
+
+![message in the patcher](/img/message-patcher.png)
