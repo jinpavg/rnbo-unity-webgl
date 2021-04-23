@@ -1,5 +1,6 @@
 # Using RNBO for generative audio in your Unity WebGL game
 
+Hello friends, I'm Alex, a Max user, composer, laptop performer, generative video artist. What I am *not*, is a web developer. This tutorial is, in part, a story of how RNBO has made that world accessible to me and how it allows me to make art in the browser in a way that would not have been possible before.
 
 I had an idea: a browser-based video game that you can play like a synthesizer: with your movement, items you interact with, and rooms you enter all contributing to the music you make and hear. 
 
@@ -7,7 +8,7 @@ I could start creating the game with Unity, building for its WebGL platform, but
 
 Even if Unity WebGL allowed for more complex Web Audio API functionality, I'd have to program it myself using JavaScript. Unity's internal audio tools that allow you to mix audio or create adaptive audio using FMOD do not translate to the browser when building for the WebGL platform. In that case, I'd run up against my own limited JavaScript knowledge and the computational limits of using JavaScript for generative audio.
 
-With RNBO, I can patch the generative audio engine of my dreams, and then use that as the audio engine for a Unity WebGL game. I believe this to be extremely exciting due to our ability—especially as Max users who are not necessarily web developers—to create new types of user interfaces for music and audio in the browser, and for sharing musical work in new interactive ways, particularly after a year of Zoom-concert fatigue. 
+With RNBO, I can patch the generative audio engine of my dreams, and then use that as the audio engine for a Unity WebGL game. I believe this to be extremely exciting due to our ability—especially for Max users who are not necessarily web developers—to create new types of user interfaces for music and audio in the browser, and for sharing musical work in new interactive ways, particularly after a year of Zoom-concert fatigue. 
 
 ![the unity/rnbo toolchain](img/Map.png)
 
@@ -42,20 +43,21 @@ I am new to web development. As I began this project, I experienced some pain. P
 So you've built your RNBO device, the engine for your cool generative audio video game. In the simple example patch included with this tutorial, you can see a `[rnbo~]` with parameters, an inport for receiving messages, and several `[buffer~]` objects within RNBO that hold our samples. You can learn more about communications in and out of your RNBO device [in the documentation](https://rnbo.cycling74.com/docs/rnbo_communications_topic?v=).
 
 If you unlock the patcher, select the `[rnbo~]` object, and look at the object snapshots, you'll see that there are three snapshots with filled-in circles indicating that these snapshots are saved with the device. These snapshots will become our presets when we export the device.
-![snapshots](/img/snapshots.png)
+![snapshots](img/snapshots.png)
 The first key to the RNBO-Unity WebGL connection is to export your RNBO patch with the JSON Export target. 
-![target export](/img/JSON.png)
+![target export](img/JSON.png)
 In "Configuration," if you are using presets and samples, make sure to check the box for "Include Presets" and "Generate Sample Dependencies File." If you select "Copy Sample Dependencies," the export will generate a handy `/media` directory filled with all of your samples. 
-![media directory](/img/media.png)
+![media directory](img/media.png)
 I will urge you here to make sure that your samples are in the `.wav` or `.mp3` format rather than `.aif`, as Chrome and other browsers might reject the `.aif` files. 
 
 You also want to have "Codegen: Generate WASM Output" selected, as this can greatly improve the device's performance in the browser.
 
 When you are ready to export the device, it's preset dependencies, and sample depencies, select an Output Directory and Export to Selected Target.
-![choose output](/img/output.png)
+![choose output](img/output.png)
 
 You should now have, in your chosen directory, a `/code` folder containing your patch as a `.json` file, a `/data` folder containing your preset and sample data, also as `.json` files, and a `/media` folder full of the samples themselves.
-![export folder](/img/export.png)
+![export folder](img/export.png)
+
 We will need all of these files and folders when we are building our web application. 
 
 ## Phase II: Javascript phase
@@ -70,7 +72,7 @@ As the Web App tutorial describes, we will need the RNBO Javascript library in o
 <script type="text/javascript" src="https://c74-public.nyc3.digitaloceanspaces.com/rnbo/0.10.0/rnbo.min.js"></script>
 ```
 This `index.html` file should be in the root directory of your web application:
-![root](/img/root-dir.png)
+![root](img/root-dir.png)
 
 With this library, you can now fetch your local patch JSON and load it into a RNBO device that you create. You can do that with code like the following, either inside of a `<script>` tag or its own `.js` file.
 
@@ -125,7 +127,7 @@ We can do that with three elements:
 
 1. define a **function in our javascript** that takes a parameter and a float as arguments, then sets the value of that parameter with that float
 2. **create a plugin** containing a *second* function we can use in our C# script to pass the data we need to the javascript function
-3. **import the function** into a C# script that will use that function and pass it a string, `"ModTwo"` and a float, the horizontal location value.
+3. **import the function** into a C# script that will use that function and pass it a string, `"modTwo"` and a float, the horizontal location value.
 
 Our Javascript function could look something like:
 
@@ -136,6 +138,7 @@ function updateParamWithFloat(paramName, float) {
     if (param) param.value = val;
 }
 ```
+*Note, the above code assumes that `myDevice` has been assigned the value of `device`, our RNBO device, at some point, an example of which you can see in the `rnbo-scripts.js` file accompanying this tutorial.*
 
 This `updateParamWithFloat()` function should recieve a string and a float, it will look for a parameter in our RNBO device that has a name matching that string, it will take the absolute value of the float (to avoid negative values, since this is a frequency), and, if that parameter does indeed exist, it will set that parameter's value accordingly.
 
@@ -165,11 +168,11 @@ My solution, using the `UTF8ToString()` helper function above, works fine for th
 
 Now, we move over into our Unity project. Navigate to the Project window, and under "Assets," create a new folder called "Plugins" if you do not already have a Plugins folder. 
 
-![plugin folder](/img/project.png)
+![plugin folder](img/project.png)
 
 Here is where you should put your `jsLibrary.jslib` file. Once it is in the Plugins folder, click on your `.jslib` file,  open it in the Inspector, and make sure that WebGL is selected as the plugin's platform.
 
-![plugin inspector](/img/inspector.png)
+![plugin inspector](img/inspector.png)
 
 Now we need to import the function from our `.jslib` plugin into our C# script.
 
@@ -238,7 +241,7 @@ In "Build Settings," check the scene(s) you want to include in the build, select
 
 Next, click "Player Settings," scroll down to "Publishing Settings," and turn the Compression Format to "Disabled." This is obviously not ideal for larger game builds, but this tutorial will only work with this setting due to an active [Unity bug](https://forum.unity.com/threads/uncaught-referenceerror-unityframework-is-not-defined-at-htmlscriptelement-script-onload-webgl.803967/) at its time of writing.
 
-![compression disabled](/img/comp-disabled.png)
+![compression disabled](img/comp-disabled.png)
 
 With that, select "Build" and choose an empty folder to house the build.
 
@@ -248,7 +251,7 @@ The WebGL build will generate an `index.html` file, a `/Build` directory, and a 
 
 Now your web app's root directory might look somethign like this:
 
-![root directory now](/img/directory-with-unity.png)
+![root directory now](img/directory-with-unity.png)
 
 Depending on how you are integrating your Unity game into your web app, you may want to take this from the `index.html` file generated by Unity:
 
@@ -333,9 +336,9 @@ Again, you may not need all of the above, depending on how you are configuring y
 
 You've made it. Serve up that web app with your secure connection, click somewhere on the page to trigger your `AudioContext.resume()`, and use the left and right arrow keys to change your modulation parameter. You've got generative audio in a Unity WebGL game!
 
-*Next up: Change Presets and send messages to your RNBO device to trigger samples in-game.*
+*See Appendix II to change presets and send messages to your RNBO device to trigger samples in-game.*
 
-## Appendix: Tips to avoid pain (verbose)
+## Appendix I: Tips to avoid pain (verbose)
 
 ### Test on HTTPS
 
@@ -382,3 +385,149 @@ If you are copying sample dependencies in your RNBO export, make sure to use `.w
 ### Unity version
 
 And finally, as a word of caution, I'm using Unity 2020.3.x for the purposes of this tutorial. [Many things have changed](https://forum.unity.com/threads/changes-to-the-webgl-loader-and-templates-introduced-in-unity-2020-1.817698/) between 2018 and 2021 in terms of how Unity exports and compresses code for its WebGL builds. Some of what I describe in this tutorial may not work with a Unity 2018.xx version, or might require adjustment. In addition, there are some active Unity bugs regarding compression of WebGL Build files that may be fixed after the writing of this tutorial.
+
+## Appendix II: Samples and Presets
+
+# Using RNBO for generative audio in your Unity WebGL game
+
+## Part 2: Samples and Presets
+
+In our generative game audio design journey, we will likely want to trigger samples or perhaps switch between several of our RNBO device presets based on game state.
+
+Our communication between our Unity C# scripting and our Javascript will work in much the same way as updating parameters, though we will have to set our Javascript up to load presets and samples, and set up a function that sends our RNBO device a message, rather than a parameter update.
+
+## Set up our Javascript
+
+If we want to load presets and samples, we'll need to initialize
+
+```js
+let presets = [];
+let samples = [];
+```
+We'll also want to add, after we fetch our `patch.export.json`:
+
+```js
+// Load and parse the presets file
+.then(() => {
+    return fetch("data/patch.export.presets.json")
+})
+
+.then((presetsResponse) => {
+    return presetsResponse.json()
+})
+
+.then((presetsJson) => {
+    presets = presetsJson;
+})
+
+// Load and parse the samples file
+.then(() => {
+    return fetch("data/patch.export.samples.json")
+})
+
+.then((samplesResponse) => {
+    return samplesResponse.json()
+})
+
+.then((samplesJson) => {
+    samples = samplesJson;
+})
+```
+and also, after we've connected our device to audio output:
+
+```js
+.then((device) => {
+    // when device is ready, connect it to audio output
+    device.node.connect(outputNode);
+
+    // If there are any samples to load, load them
+    let loadSample = (path, sampleid, device, audioContext) => {
+        return fetch(path)
+        .then((fileResponse) => {
+            if (fileResponse.ok)
+                return fileResponse.arrayBuffer();
+
+            throw new Error("Couldn't find sample file at path " + path);
+        })
+        .then((arrayBuffer) => {
+            return new Promise((resolve, reject) => {
+                audioContext.decodeAudioData(arrayBuffer, (buf) => resolve(buf), (err) => reject(err));
+            });
+        })
+        .then((decodedAudio) => {
+            return device.setDataBuffer(sampleid, decodedAudio);
+        })
+        .catch((err) => {
+            console.log("Couldn't load buffer with name " + sampleid);
+            console.error(err);
+        });
+    }
+
+    samples.forEach((sample) => {
+        // Samples paths are relative to the samples.json file
+        let samplePath = "data/" + sample.path;
+
+        // This is an asynchronous function, but we call it without waiting for the result
+        loadSample(samplePath, sample.name, device, audioContext);
+    });
+
+
+})
+```
+To see this all in one place, you can look in the example file associated with this tutorial, `rnbo-scripts.js`.
+
+## It's about sending a message
+
+To illustrate how we could send a message to trigger a sample, imagine this simple inport which just takes in one of three integers and triggers one of three samples.
+
+In Max:
+
+![message going in](/img/message-inport.png)
+
+In rnbo~:
+
+![message in the RNBO patcher](/img/message-patcher.png)
+
+To facillitate picking this sample from our Unity game, we'll first set up a function in our `.jslib` file which will pass a single value, which we will use as the index of our `samples` array.
+
+```
+  pickSampleFromUnity: function(x) {
+    useSampleFromUnity(x);
+  },
+```
+Then, in our C# script, we will import that function:
+
+```c#
+[DllImport("__Internal")]
+private static extern void pickSampleFromUnity(int x);   
+```
+And later, pass it an integer which will serve as the index of our `samples` array. I'll call it `sampleIndex`. In my example, I'm passing it a random integer between 0 and 2 on every collision between the player and a target.
+
+```c#
+int sampleIndex = Random.Range(0, 3);
+pickSampleFromUnity(sampleIndex);
+```
+
+and in our javascript, we'll define that `useSampleFromUnity()` function.
+
+```js
+function useSampleFromUnity(sampleIndex){
+    if (myDevice) {
+        let messageBody = [sampleIndex];
+        let messageEvent = new RNBO.MessageEvent(RNBO.TimeNow, "thisSample", messageBody);
+        myDevice.scheduleEvent(messageEvent);
+    }
+}
+```
+*Note: the line `let messageBody = [sampleIndex]` contains an array so that we have the ability to send multiple integers to our device in this message if we want to do that. In this example, we're only sending one at a time. Also, please see the earlier note regarding the variable `myDevice`.*
+
+### Picking a preset
+
+If we want to pick a preset, we just use that integer that we sent from Unity slightly differently. Instead of sending a message, we can set the preset using the following code.
+
+```js
+// here, the "0" sets the first preset
+device.setPreset(
+        presets[0].preset
+      )
+```
