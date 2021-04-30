@@ -4,8 +4,8 @@ let presets = [];
 let samples = [];
 let audioContext;
 
-let sampleIndex = 0;
-let presetIndex = 0;
+// let sampleIndex = 0;
+// let presetIndex = 0;
 
 function updateParamWithFloat(paramName, float) {
     let param = myDevice.parametersById.get(paramName);
@@ -13,28 +13,12 @@ function updateParamWithFloat(paramName, float) {
     if (param) param.value = val;
 }
 
-function getIndexFromUnity(arrayName, int) {
-    //console.log(arrayName + int);
-    myDevice.setPreset(
-        presets[int].preset
-      )
-}
-
-// // get data from Unity C# script
-function useStringFromUnity(jsString) {
-    //console.log(`welp` + jsString);
-}
-
-function useValueFromUnity(unityFloat){
-    //console.log(`hi world` + unityFloat);
-}
-
 function useSampleFromUnity(sampleIndex){
     if (myDevice) {
         let messageBody = [sampleIndex];
         let messageEvent = new RNBO.MessageEvent(RNBO.TimeNow, "thisSample", messageBody);
         myDevice.scheduleEvent(messageEvent);
-        //console.log(`happily playing sample ${sampleIndex}`);
+        console.log(`happily playing sample ${sampleIndex}`);
     }
 }
 
@@ -125,6 +109,9 @@ fetch("code/patch.export.json")
             // This is an asynchronous function, but we call it without waiting for the result
             loadSample(samplePath, sample.name, device, audioContext);
         });
+        myDevice.setPreset(
+            presets[0].preset
+          )
 
         // Setting a parameter named "opening"
         let openingParam = device.parametersById.get("opening");
