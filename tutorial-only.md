@@ -238,12 +238,6 @@ public class PlayerController : MonoBehaviour
     public float speed = 10.0f;
     private float horizLoc;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -303,7 +297,7 @@ Depending on how you are integrating your Unity game into your web app, you may 
     </div>
   </div>
 ```
-You will also need the following `<script>` tag, in order to load the files from `/Build` and `/TemplateData` folders. In my example, I built my WebGL game into a folder titled "ConnectItToUnity2," and the build files are titled accordingly.
+You will also need the following `<script>` tag, in order to load the files from `/Build` and `/TemplateData` folders. In my example, I built my WebGL game into a folder titled "connectItToUnity2," and the build files are titled accordingly.
 
 ```html
 <!-- Unity WebGL Build -->

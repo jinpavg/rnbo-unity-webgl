@@ -4,9 +4,6 @@ let presets = [];
 let samples = [];
 let audioContext;
 
-// let sampleIndex = 0;
-// let presetIndex = 0;
-
 function updateParamWithFloat(paramName, float) {
     let param = myDevice.parametersById.get(paramName);
     let val = Math.abs(float * 20);
@@ -18,7 +15,6 @@ function useSampleFromUnity(sampleIndex){
         let messageBody = [sampleIndex];
         let messageEvent = new RNBO.MessageEvent(RNBO.TimeNow, "thisSample", messageBody);
         myDevice.scheduleEvent(messageEvent);
-        console.log(`happily playing sample ${sampleIndex}`);
     }
 }
 
@@ -40,7 +36,7 @@ fetch("code/patch.export.json")
         patcher = responseJson;
     })
 
-    // Load and parse the presets file
+    // load and parse the presets file
     .then(() => {
         return fetch("data/patch.export.presets.json")
     })
@@ -53,7 +49,7 @@ fetch("code/patch.export.json")
         presets = presetsJson;
     })
 
-    // Load and parse the samples file
+    // load and parse the samples file
     .then(() => {
         return fetch("data/patch.export.samples.json")
     })
@@ -66,7 +62,7 @@ fetch("code/patch.export.json")
         samples = samplesJson;
     })
 
-    // Use the fetched patcher to create a RNBO device
+    // use the fetched patcher to create a RNBO device
     .then(() => {
         return RNBO.createDevice({
             context: audioContext,
@@ -79,7 +75,7 @@ fetch("code/patch.export.json")
         myDevice = device;
         device.node.connect(outputNode);
 
-        // If there are any samples to load, load them
+        // if there are any samples to load, load them
         let loadSample = (path, sampleid, device, audioContext) => {
             return fetch(path)
             .then((fileResponse) => {
@@ -103,17 +99,19 @@ fetch("code/patch.export.json")
         }
 
         samples.forEach((sample) => {
-            // Samples paths are relative to the samples.json file
+            // samples paths are relative to the samples.json file
             let samplePath = "data/" + sample.path;
 
-            // This is an asynchronous function, but we call it without waiting for the result
+            // this is an asynchronous function, but we call it without waiting for the result
             loadSample(samplePath, sample.name, device, audioContext);
         });
+
+        // set the first preset
         myDevice.setPreset(
             presets[0].preset
           )
 
-        // Setting a parameter named "opening"
+        // setting a parameter named "opening"
         let openingParam = device.parametersById.get("opening");
         openingParam.value = 0;
 
