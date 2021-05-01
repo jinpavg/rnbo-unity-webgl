@@ -43,7 +43,6 @@ I am new to web development. As I began this project, I experienced some pain. P
 So you've built your RNBO device, the engine for your cool generative audio video game. In the simple example patch included with this tutorial, you can see a `[rnbo~]` with parameters, an inport for receiving messages, and several `[buffer~]` objects within RNBO that hold our samples. You can learn more about communications in and out of your RNBO device [in the documentation](https://rnbo.cycling74.com/docs/rnbo_communications_topic?v=).
 
 If you unlock the patcher, select the `[rnbo~]` object, and look at the object snapshots, you'll see that there are three snapshots with filled-in circles indicating that these snapshots are saved with the device. These snapshots will become our presets when we export the device.
-<<<<<<< HEAD:tutorial.md
 
 ![snapshots](/img/snapshots.png)
 
@@ -55,31 +54,17 @@ In "Configuration," if you are using presets and samples, make sure to check the
 
 ![media directory](/img/media.png)
 
-=======
-![snapshots](img/snapshots.png)
-The first key to the RNBO-Unity WebGL connection is to export your RNBO patch with the JSON Export target. 
-![target export](img/JSON.png)
-In "Configuration," if you are using presets and samples, make sure to check the box for "Include Presets" and "Generate Sample Dependencies File." If you select "Copy Sample Dependencies," the export will generate a handy `/media` directory filled with all of your samples. 
-![media directory](img/media.png)
->>>>>>> dev:tutorial-pt-1.md
 I will urge you here to make sure that your samples are in the `.wav` or `.mp3` format rather than `.aif`, as Chrome and other browsers might reject the `.aif` files. 
 
 You also want to have "Codegen: Generate WASM Output" selected, as this can greatly improve the device's performance in the browser.
 
 When you are ready to export the device, it's preset dependencies, and sample depencies, select an Output Directory and Export to Selected Target.
-<<<<<<< HEAD:tutorial.md
 
 ![choose output](/img/output.png)
 
 You should now have, in your chosen directory, a `/code` folder containing your patch as a `.json` file, a `/data` folder containing your preset and sample data, also as `.json` files, and a `/media` folder full of the samples themselves.
 
 ![export folder](/img/export.png)
-=======
-![choose output](img/output.png)
-
-You should now have, in your chosen directory, a `/code` folder containing your patch as a `.json` file, a `/data` folder containing your preset and sample data, also as `.json` files, and a `/media` folder full of the samples themselves.
-![export folder](img/export.png)
->>>>>>> dev:tutorial-pt-1.md
 
 We will need all of these files and folders when we are building our web application. 
 
@@ -95,12 +80,8 @@ As the Web App tutorial describes, we will need the RNBO Javascript library in o
 <script type="text/javascript" src="https://c74-public.nyc3.digitaloceanspaces.com/rnbo/0.10.0/rnbo.min.js"></script>
 ```
 This `index.html` file should be in the root directory of your web application:
-<<<<<<< HEAD:tutorial.md
 
-![root](/img/root-dir.png)
-=======
 ![root](img/root-dir.png)
->>>>>>> dev:tutorial-pt-1.md
 
 With this library, you can now fetch your local patch JSON and load it into a RNBO device that you create. You can do that with code like the following, either inside of a `<script>` tag or its own `.js` file.
 
@@ -408,11 +389,7 @@ If you are copying sample dependencies in your RNBO export, make sure to use `.w
 
 And finally, as a word of caution, I'm using Unity 2020.3.x for the purposes of this tutorial. [Many things have changed](https://forum.unity.com/threads/changes-to-the-webgl-loader-and-templates-introduced-in-unity-2020-1.817698/) between 2018 and 2021 in terms of how Unity exports and compresses code for its WebGL builds. Some of what I describe in this tutorial may not work with a Unity 2018.xx version, or might require adjustment. In addition, there are some active Unity bugs regarding compression of WebGL Build files that may be fixed after the writing of this tutorial.
 
-<<<<<<< HEAD:tutorial.md
-- samples: use message events, triggered by collision, for example, to trigger samples
-=======
 ## Appendix II: Samples and Presets
->>>>>>> dev:tutorial-pt-1.md
 
 # Using RNBO for generative audio in your Unity WebGL game
 
