@@ -6,6 +6,7 @@ I had an idea: a browser-based video game that you can play like a synthesizer: 
 
 I could start creating the game with Unity, building for its WebGL platform, but I would immediately hit a problem: Unity WebGL builds use a backend for audio based on the Web Audio API that supports only the most basic audio functionality. You can trigger samples, you can have background audio, audio can start and stop, you can play a sample back at a higher or lower pitch, and [that's about it!](https://docs.unity3d.com/Manual/webgl-audio.html)
 
+### Limits of Unity WebGL, and an Alternative
 Even if Unity WebGL allowed for more complex Web Audio API functionality, I'd have to program it myself using JavaScript. Unity's internal audio tools that allow you to mix audio or create adaptive audio using FMOD do not translate to the browser when building for the WebGL platform. In that case, I'd run up against my own limited JavaScript knowledge and the computational limits of using JavaScript for generative audio.
 
 With RNBO, I can patch the generative audio engine of my dreams, and then use that as the audio engine for a Unity WebGL game. I believe this to be extremely exciting due to our ability—especially for Max users who are not necessarily web developers—to create new types of user interfaces for music and audio in the browser, and for sharing musical work in new interactive ways, particularly after a year of Zoom-concert fatigue. 
@@ -150,6 +151,8 @@ function updateParamWithFloat(paramName, float) {
 *Note, the above code assumes that `myDevice` has been assigned the value of `device`, our RNBO device, at some point, an example of which you can see in the `rnbo-scripts.js` file accompanying this tutorial.*
 
 This `updateParamWithFloat()` function should recieve a string and a float, it will look for a parameter in our RNBO device that has a name matching that string, it will take the absolute value of the float (to avoid negative values, since this is a frequency), and, if that parameter does indeed exist, it will set that parameter's value accordingly.
+
+### The `.jslib` Plugin
 
 Now, we need to create a `.jslib` file, a special plugin file that Unity uses to assist in interacting with browser scripting, specifically Javascript. I call mine `jsLibrary.jslib`, and I will treat it as a library with any javascript functions that I need to call in my C# scripts.
 
@@ -390,10 +393,6 @@ If you are copying sample dependencies in your RNBO export, make sure to use `.w
 And finally, as a word of caution, I'm using Unity 2020.3.x for the purposes of this tutorial. [Many things have changed](https://forum.unity.com/threads/changes-to-the-webgl-loader-and-templates-introduced-in-unity-2020-1.817698/) between 2018 and 2021 in terms of how Unity exports and compresses code for its WebGL builds. Some of what I describe in this tutorial may not work with a Unity 2018.xx version, or might require adjustment. In addition, there are some active Unity bugs regarding compression of WebGL Build files that may be fixed after the writing of this tutorial.
 
 ## Appendix II: Samples and Presets
-
-# Using RNBO for generative audio in your Unity WebGL game
-
-## Part 2: Samples and Presets
 
 In our generative game audio design journey, we will likely want to trigger samples or perhaps switch between several of our RNBO device presets based on game state.
 
