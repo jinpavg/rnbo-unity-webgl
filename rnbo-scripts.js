@@ -106,9 +106,9 @@ fetch("code/patch.export.json")
             loadSample(samplePath, sample.name, device, audioContext);
         });
 
-        // set the first preset
+        // set a preset, in this case, the third preset
         myDevice.setPreset(
-            presets[0].preset
+            presets[2].preset
           )
 
         // setting a parameter named "opening"
