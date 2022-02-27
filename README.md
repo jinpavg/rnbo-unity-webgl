@@ -1,6 +1,9 @@
 # generative-unity
 generative audio in a unity webGL game
 
+## find it online
+[https://tinyurl.com/findthebox](https://tinyurl.com/findthebox)
+
 ## the game files
 the unity project, C# scripts, and .jslib plugin that makes this all work is all [here](https://github.com/jinpavg/simpleComms-game)
 
