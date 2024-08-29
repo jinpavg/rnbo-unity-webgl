@@ -3,7 +3,7 @@
 Unity WebGL builds use a backend for audio based on the Web Audio API that supports only the most [basic audio functionality.](https://docs.unity3d.com/Manual/webgl-audio.html)
 
 ### Limits of Unity WebGL, and an Alternative
-Even if Unity WebGL allowed for more complex Web Audio API functionality, with RNBO, we can patch the generative audio engine of our dreams, and then use that as the audio engine for a Unity WebGL game. 
+With RNBO, we can patch the generative audio engine of our dreams, and then use that as the audio engine for a Unity WebGL game. 
 
 ![the unity/rnbo toolchain](img/Map.png)
 
