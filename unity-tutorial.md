@@ -1,15 +1,9 @@
 # Using RNBO for generative audio in your Unity WebGL game
 
-Hello friends, I'm Alex, a Max user, composer, laptop performer, generative video artist. What I am *not*, is a web developer. This tutorial is, in part, a story of how RNBO has made that world accessible to me and how it allows me to make art in the browser in a way that would not have been possible before.
-
-I had an idea: a browser-based video game that you can play like a synthesizer: with your movement, items you interact with, and rooms you enter all contributing to the music you make and hear. 
-
-I could start creating the game with Unity, building for its WebGL platform, but I would immediately hit a problem: Unity WebGL builds use a backend for audio based on the Web Audio API that supports only the most basic audio functionality. You can trigger samples, you can have background audio, audio can start and stop, you can play a sample back at a higher or lower pitch, and [that's about it!](https://docs.unity3d.com/Manual/webgl-audio.html)
+Unity WebGL builds use a backend for audio based on the Web Audio API that supports only the most [basic audio functionality.](https://docs.unity3d.com/Manual/webgl-audio.html)
 
 ### Limits of Unity WebGL, and an Alternative
-Even if Unity WebGL allowed for more complex Web Audio API functionality, I'd have to program it myself using JavaScript. Unity's internal audio tools that allow you to mix audio or create adaptive audio using FMOD do not translate to the browser when building for the WebGL platform. In that case, I'd run up against my own limited JavaScript knowledge and the computational limits of using JavaScript for generative audio.
-
-With RNBO, I can patch the generative audio engine of my dreams, and then use that as the audio engine for a Unity WebGL game. I believe this to be extremely exciting due to our ability—especially for Max users who are not necessarily web developers—to create new types of user interfaces for music and audio in the browser, and for sharing musical work in new interactive ways, particularly after a year of Zoom-concert fatigue. 
+Even if Unity WebGL allowed for more complex Web Audio API functionality, with RNBO, we can patch the generative audio engine of our dreams, and then use that as the audio engine for a Unity WebGL game. 
 
 ![the unity/rnbo toolchain](img/Map.png)
 
@@ -31,7 +25,7 @@ In this guide, I've broken the process into 4 phases based on the different type
 
 ## Phase 0: Tips to avoid pain
 
-I am new to web development. As I began this project, I experienced some pain. Please learn from my pain and follow these tips. I'll include a longer discussion of these pain-avoidance methods at the end of this tutorial, but to summarize:
+I'll include a longer discussion of these pain-avoidance methods at the end of this tutorial, but to summarize:
 
 - Test on HTTPS
 - Make sure your local testing server is configured for compressed .js files
@@ -73,7 +67,7 @@ We will need all of these files and folders when we are building our web applica
 
 ### Key Javascript code
 
-Much of the information in the [Using RNBO in a Web Application](https://rnbo.cycling74.com/docs/rnbo_using_rnbo_web_app?v=) tutorial is going to be applicable for our project, as we essentially want to get our RNBO device working in the browser and then connect it to the data coming from our Unity game. For this reason, I also found it helpful to test my device's functionality with the [Static Webpage Export](https://rnbo.cycling74.com/docs/rnbo_web_export_scaffold?v=) and/or the [Shareground](https://rnbo.cycling74.com/docs/rnbo_shareground?v=) just to make sure the parameters, presets, and samples were behaving as expected.
+Much of the information in the [Using RNBO in a Web Application](https://rnbo.cycling74.com/docs/rnbo_using_rnbo_web_app?v=) tutorial is going to be applicable for our project, as we essentially want to get our RNBO device working in the browser and then connect it to the data coming from our Unity game. 
 
 As the Web App tutorial describes, we will need the RNBO Javascript library in order to load our patcher. The simplest way to do this is to include a HTML script tag in your `index.html` file:
 
@@ -236,7 +230,7 @@ public class PlayerController : MonoBehaviour
 }
 
 ```
-So now, if all goes according to plan, we will have passed the string `"modTwo"` and the value of `horizLoc` to `setParamWithFloat()`, which will convert that string to a string that our Javascript can use and pass that converted string and the value of `horizLoc` to `updateParamWithFloat()`, over in our our Javascript file. Then, `updateParamWithFloat()` will look for a parameter in our device whose name matches that string, and, if it exists, will set its value to the absolute value of `horizLoc`. **Whew!** What a journey.
+So now, if all goes according to plan, we will have passed the string `"modTwo"` and the value of `horizLoc` to `setParamWithFloat()`, which will convert that string to a string that our Javascript can use and pass that converted string and the value of `horizLoc` to `updateParamWithFloat()`, over in our our Javascript file. Then, `updateParamWithFloat()` will look for a parameter in our device whose name matches that string, and, if it exists, will set its value to the absolute value of `horizLoc`.
 
 
 ### Building our Game
